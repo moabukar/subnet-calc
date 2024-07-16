@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, send_from_directory
-from subnet_calculator import calculate_subnet  # Import the function from subnet_calculator.py
+from subnet_calculator import calculate_subnet 
 
 app = Flask(__name__)
 
@@ -15,4 +15,4 @@ def calculate():
     return jsonify(result)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)
