@@ -10,6 +10,10 @@
             --text-color-light: #000;
             --bg-color-dark: #333;
             --text-color-dark: #fff;
+            --bg-color-blue: #007bff;
+            --text-color-blue: #fff;
+            --bg-color-green: #28a745;
+            --text-color-green: #fff;
         }
 
         body {
@@ -31,6 +35,12 @@
             top: 20px;
             right: 20px;
             cursor: pointer;
+        }
+
+        .theme-selector {
+            position: absolute;
+            top: 20px;
+            left: 20px;
         }
 
         .content {
@@ -117,6 +127,15 @@
     </style>
 </head>
 <body>
+    <div class="theme-selector">
+        <label for="theme-select">Choose Theme:</label>
+        <select id="theme-select" onchange="changeTheme()">
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+            <option value="blue">Blue</option>
+            <option value="green">Green</option>
+        </select>
+    </div>
     <div class="theme-toggle" onclick="toggleTheme()">Toggle Theme</div>
     <div class="content">
         <div class="container">
@@ -173,26 +192,56 @@
             return networkRegex.test(network) && subnetMaskRegex.test(subnetMask);
         }
 
+        function changeTheme() {
+            const theme = document.getElementById('theme-select').value;
+            switch (theme) {
+                case 'dark':
+                    document.documentElement.style.setProperty('--bg-color-light', '#333');
+                    document.documentElement.style.setProperty('--text-color-light', '#fff');
+                    document.body.style.backgroundColor = '#333';
+                    document.body.style.color = '#fff';
+                    document.querySelectorAll('.container, .history').forEach(element => {
+                        element.style.backgroundColor = '#444';
+                    });
+                    break;
+                case 'blue':
+                    document.documentElement.style.setProperty('--bg-color-light', '#007bff');
+                    document.documentElement.style.setProperty('--text-color-light', '#fff');
+                    document.body.style.backgroundColor = '#007bff';
+                    document.body.style.color = '#fff';
+                    document.querySelectorAll('.container, .history').forEach(element => {
+                        element.style.backgroundColor = '#0056b3';
+                    });
+                    break;
+                case 'green':
+                    document.documentElement.style.setProperty('--bg-color-light', '#28a745');
+                    document.documentElement.style.setProperty('--text-color-light', '#fff');
+                    document.body.style.backgroundColor = '#28a745';
+                    document.body.style.color = '#fff';
+                    document.querySelectorAll('.container, .history').forEach(element => {
+                        element.style.backgroundColor = '#218838';
+                    });
+                    break;
+                default:
+                    document.documentElement.style.setProperty('--bg-color-light', '#f0f0f0');
+                    document.documentElement.style.setProperty('--text-color-light', '#000');
+                    document.body.style.backgroundColor = '#f0f0f0';
+                    document.body.style.color = '#000';
+                    document.querySelectorAll('.container, .history').forEach(element => {
+                        element.style.backgroundColor = '#fff';
+                    });
+                    break;
+            }
+        }
+
         function toggleTheme() {
             const currentBgColor = getComputedStyle(document.body).getPropertyValue('--bg-color-light');
             if (currentBgColor.trim() === '#f0f0f0') {
-                document.documentElement.style.setProperty('--bg-color-light', '#333');
-                document.documentElement.style.setProperty('--text-color-light', '#fff');
-                document.documentElement.style.setProperty('--bg-color-dark', '#f0f0f0');
-                document.documentElement.style.setProperty('--text-color-dark', '#000');
-                document.body.style.backgroundColor = '#333';
-                document.body.style.color = '#fff';
-                document.querySelector('.container').style.backgroundColor = '#444';
-                document.querySelector('.history').style.backgroundColor = '#444';
+                changeTheme('dark');
+                document.getElementById('theme-select').value = 'dark';
             } else {
-                document.documentElement.style.setProperty('--bg-color-light', '#f0f0f0');
-                document.documentElement.style.setProperty('--text-color-light', '#000');
-                document.documentElement.style.setProperty('--bg-color-dark', '#333');
-                document.documentElement.style.setProperty('--text-color-dark', '#fff');
-                document.body.style.backgroundColor = '#f0f0f0';
-                document.body.style.color = '#000';
-                document.querySelector('.container').style.backgroundColor = '#fff';
-                document.querySelector('.history').style.backgroundColor = '#fff';
+                changeTheme('light');
+                document.getElementById('theme-select').value = 'light';
             }
         }
 
