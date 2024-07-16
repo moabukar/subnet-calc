@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Subnet Calculator</title>
     <style>
+        :root {
+            --bg-color-light: #f0f0f0;
+            --text-color-light: #000;
+            --bg-color-dark: #333;
+            --text-color-dark: #fff;
+        }
+
         body {
             font-family: Arial, sans-serif;
             display: flex;
@@ -13,7 +20,11 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
+            background-color: var(--bg-color-light);
+            color: var(--text-color-light);
+            transition: background-color 0.5s, color 0.5s;
         }
+
         .container {
             width: 400px;
             padding: 20px;
@@ -21,7 +32,10 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             text-align: center;
+            background-color: #fff;
+            transition: background-color 0.5s;
         }
+
         input {
             width: 80%;
             padding: 10px;
@@ -29,6 +43,7 @@
             border: 1px solid #ccc;
             border-radius: 4px;
         }
+
         button {
             padding: 10px 20px;
             border: none;
@@ -36,16 +51,27 @@
             background-color: #28a745;
             color: white;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
+
         button:hover {
             background-color: #218838;
         }
+
         .result {
             margin-top: 20px;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
+    <div class="theme-toggle" onclick="toggleTheme()">Toggle Theme</div>
     <div class="container">
         <h1>Subnet Calculator</h1>
         <input type="text" id="network" placeholder="Network Address (e.g., 192.168.1.0)">
@@ -80,7 +106,27 @@
                     console.error('There has been a problem with your fetch operation:', error);
                 });
         }
+
+        function toggleTheme() {
+            const currentBgColor = getComputedStyle(document.body).getPropertyValue('--bg-color-light');
+            if (currentBgColor.trim() === '#f0f0f0') {
+                document.documentElement.style.setProperty('--bg-color-light', '#333');
+                document.documentElement.style.setProperty('--text-color-light', '#fff');
+                document.documentElement.style.setProperty('--bg-color-dark', '#f0f0f0');
+                document.documentElement.style.setProperty('--text-color-dark', '#000');
+                document.body.style.backgroundColor = '#333';
+                document.body.style.color = '#fff';
+                document.querySelector('.container').style.backgroundColor = '#444';
+            } else {
+                document.documentElement.style.setProperty('--bg-color-light', '#f0f0f0');
+                document.documentElement.style.setProperty('--text-color-light', '#000');
+                document.documentElement.style.setProperty('--bg-color-dark', '#333');
+                document.documentElement.style.setProperty('--text-color-dark', '#fff');
+                document.body.style.backgroundColor = '#f0f0f0';
+                document.body.style.color = '#000';
+                document.querySelector('.container').style.backgroundColor = '#fff';
+            }
+        }
     </script>
-    
 </body>
 </html>
