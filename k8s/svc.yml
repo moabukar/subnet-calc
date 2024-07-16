@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: subnet-calculator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: subnet-calculator
+  template:
+    metadata:
+      labels:
+        app: subnet-calculator
+    spec:
+      containers:
+      - name: subnet-calculator
+        image: moabukar/subnet-calc:70c89ec
+        ports:
+        - containerPort: 5000
+        env:
+        - name: FLASK_ENV
+          value: production
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: subnet-calculator
+spec:
+  selector:
+    app: subnet-calculator
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 5000
