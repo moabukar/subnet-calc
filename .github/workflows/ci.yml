@@ -5,7 +5,7 @@ on:
     paths:
     - .github/workflows/ci.yml
     - ./Dockerfile
-    - ./static/**
+    - ./static/*
     - ./server.py
     - ./subnet_calculator.py
 
