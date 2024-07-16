@@ -17,16 +17,34 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             height: 100vh;
             margin: 0;
             background-color: var(--bg-color-light);
             color: var(--text-color-light);
             transition: background-color 0.5s, color 0.5s;
+            overflow: hidden;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
         }
 
         .container {
-            width: 400px;
+            width: 90%;
+            max-width: 500px;
             padding: 20px;
             border: 1px solid #ccc;
             border-radius: 8px;
@@ -34,6 +52,8 @@
             text-align: center;
             background-color: #fff;
             transition: background-color 0.5s;
+            margin: 10px;
+            flex-shrink: 0;
         }
 
         input {
@@ -62,28 +82,67 @@
             margin-top: 20px;
         }
 
-        .theme-toggle {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            cursor: pointer;
+        .history {
+            width: 90%;
+            max-width: 500px;
+            height: 40%;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #fff;
+            padding: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 10px 0;
+        }
+
+        .history-item {
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+
+        .history-item:first-child {
+            border-top: none;
+            padding-top: 0;
+            margin-top: 0;
+        }
+
+        .copy-button {
+            background-color: #007bff;
+        }
+
+        .copy-button:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
     <div class="theme-toggle" onclick="toggleTheme()">Toggle Theme</div>
-    <div class="container">
-        <h1>Subnet Calculator</h1>
-        <input type="text" id="network" placeholder="Network Address (e.g., 192.168.1.0)">
-        <input type="text" id="subnetMask" placeholder="Subnet Mask (e.g., 24)">
-        <button onclick="calculateSubnet()">Calculate</button>
-        <div class="result" id="result"></div>
+    <div class="content">
+        <div class="container">
+            <h1>Subnet Calculator</h1>
+            <input type="text" id="network" placeholder="Network Address (e.g., 192.168.1.0)">
+            <input type="text" id="subnetMask" placeholder="Subnet Mask (e.g., 24)">
+            <button onclick="calculateSubnet()">Calculate</button>
+            <div class="result" id="result"></div>
+            <button class="copy-button" onclick="copyResults()">Copy Results</button>
+        </div>
+        <div class="history">
+            <h2>Calculation History</h2>
+            <div id="history"></div>
+        </div>
     </div>
 
     <script>
         function calculateSubnet() {
             const network = document.getElementById('network').value;
             const subnetMask = document.getElementById('subnetMask').value;
+
+            if (!validateInput(network, subnetMask)) {
+                alert('Please enter a valid network address and subnet mask.');
+                return;
+            }
+
             fetch(`/calculate?network=${network}&subnet_mask=${subnetMask}`)
                 .then(response => {
                     if (!response.ok) {
@@ -100,11 +159,18 @@
                         for (let key in data) {
                             resultDiv.innerHTML += `<p><strong>${key}:</strong> ${data[key]}</p>`;
                         }
+                        addToHistory(network, subnetMask, data);
                     }
                 })
                 .catch(error => {
                     console.error('There has been a problem with your fetch operation:', error);
                 });
+        }
+
+        function validateInput(network, subnetMask) {
+            const networkRegex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+            const subnetMaskRegex = /^(3[0-2]|[12]?[0-9])$/;
+            return networkRegex.test(network) && subnetMaskRegex.test(subnetMask);
         }
 
         function toggleTheme() {
@@ -117,6 +183,7 @@
                 document.body.style.backgroundColor = '#333';
                 document.body.style.color = '#fff';
                 document.querySelector('.container').style.backgroundColor = '#444';
+                document.querySelector('.history').style.backgroundColor = '#444';
             } else {
                 document.documentElement.style.setProperty('--bg-color-light', '#f0f0f0');
                 document.documentElement.style.setProperty('--text-color-light', '#000');
@@ -125,7 +192,36 @@
                 document.body.style.backgroundColor = '#f0f0f0';
                 document.body.style.color = '#000';
                 document.querySelector('.container').style.backgroundColor = '#fff';
+                document.querySelector('.history').style.backgroundColor = '#fff';
             }
+        }
+
+        function addToHistory(network, subnetMask, data) {
+            const historyDiv = document.getElementById('history');
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+            historyItem.innerHTML = `
+                <p><strong>Network:</strong> ${network}</p>
+                <p><strong>Subnet Mask:</strong> ${subnetMask}</p>
+                <p><strong>Results:</strong></p>
+                ${Object.keys(data).map(key => `<p>${key}: ${data[key]}</p>`).join('')}
+            `;
+            historyDiv.prepend(historyItem);
+        }
+
+        function copyResults() {
+            const resultDiv = document.getElementById('result');
+            const range = document.createRange();
+            range.selectNode(resultDiv);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+            try {
+                document.execCommand('copy');
+                alert('Results copied to clipboard.');
+            } catch (err) {
+                console.error('Failed to copy: ', err);
+            }
+            window.getSelection().removeAllRanges();
         }
     </script>
 </body>
