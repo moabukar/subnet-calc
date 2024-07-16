@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, send_from_directory
-from subnet_calculator import calculate_subnet 
+from subnet_calculator import calculate_subnet
 
 app = Flask(__name__)
 
@@ -11,6 +11,10 @@ def index():
 def calculate():
     network = request.args.get('network')
     subnet_mask = request.args.get('subnet_mask')
+    
+    # Log the inputs for debugging
+    app.logger.info(f"Network: {network}, Subnet Mask: {subnet_mask}")
+    
     result = calculate_subnet(network, subnet_mask)
     return jsonify(result)
 
