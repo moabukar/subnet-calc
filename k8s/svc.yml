@@ -14,13 +14,12 @@ spec:
     spec:
       containers:
       - name: subnet-calculator
-        image: moabukar/subnet-calc:70c89ec
+        image: moabukar/subnet-calc:b33ba69
         ports:
         - containerPort: 5000
         env:
         - name: FLASK_ENV
           value: production
-
 
 ---
 apiVersion: v1
