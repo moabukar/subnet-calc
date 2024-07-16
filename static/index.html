@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subnet Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            width: 400px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        input {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .result {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Subnet Calculator</h1>
+        <input type="text" id="network" placeholder="Network Address (e.g., 192.168.1.0)">
+        <input type="text" id="subnetMask" placeholder="Subnet Mask (e.g., 24)">
+        <button onclick="calculateSubnet()">Calculate</button>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        function calculateSubnet() {
+            const network = document.getElementById('network').value;
+            const subnetMask = document.getElementById('subnetMask').value;
+            fetch(`http://localhost:5000/calculate?network=${network}&subnet_mask=${subnetMask}`)
+                .then(response => response.json())
+                .then(data => {
+                    let resultDiv = document.getElementById('result');
+                    resultDiv.innerHTML = '';
+                    if (data.error) {
+                        resultDiv.innerHTML = `<p style="color:red;">${data.error}</p>`;
+                    } else {
+                        for (let key in data) {
+                            resultDiv.innerHTML += `<p><strong>${key}:</strong> ${data[key]}</p>`;
+                        }
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
